@@ -27,7 +27,7 @@ export async function POST(request: Request) {
       override: true,
       transformation: [{ width: 1000, height: 752, crop: "scale" }],
     };
-    const result = cloudinary.uploader.upload(path, options);
+    const result = await cloudinary.uploader.upload(path, options);
 
     return NextResponse.json(result, { status: 200 });
   } catch (err) {
