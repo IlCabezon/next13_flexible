@@ -6,6 +6,9 @@ import { useState, useEffect } from "react";
 // next-auth
 import { getProviders, signIn } from "next-auth/react";
 
+// components
+import CustomButton from "@/components/CustomButton";
+
 type Provider = {
   id: string;
   name: string;
@@ -33,7 +36,12 @@ export default function AuthProviders() {
     return (
       <div>
         {Object.values(providers).map(({ id }: Provider) => (
-          <button key={id} onClick={() => signIn(id)}>{id}</button>
+          <CustomButton
+            key={id}
+            type="button"
+            title="Sign In"
+            handleClick={() => signIn(id)}
+          />
         ))}
       </div>
     );

@@ -10,18 +10,19 @@ import FormField from "./FormField";
 import CustomMenu from "./CustomMenu";
 
 // types
-import { SessionInterface } from "@/common.types";
+import { ProjectInterface, SessionInterface } from "@/common.types";
 
 // constants
 import { categoryFilters } from "@/constants";
 import CustomButton from "./CustomButton";
 
 // actions
-import { createNewProject, fetchToken } from "@/lib/actions";
+import { createNewProject, fetchToken, updateProject } from "@/lib/actions";
 
 type Props = {
   type: string;
   session: SessionInterface;
+  project?: ProjectInterface;
 };
 
 type Form = {
@@ -65,16 +66,16 @@ const fields: Array<FormField> = [
   },
 ];
 
-export default function ProjectForm({ type, session }: Props) {
+export default function ProjectForm({ type, session, project }: Props) {
   const router = useRouter();
 
   const [form, setForm] = useState<Form>({
-    title: "",
-    description: "",
-    image: "",
-    liveSiteUrl: "",
-    githubUrl: "",
-    category: "",
+    title: project?.title || "",
+    description: project?.description || "",
+    image: project?.image || "",
+    liveSiteUrl: project?.liveSiteUrl || "",
+    githubUrl: project?.githubUrl || "",
+    category: project?.category || "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -113,13 +114,16 @@ export default function ProjectForm({ type, session }: Props) {
     try {
       if (type === "create") {
         await createNewProject(form, session?.user?.id, token);
-
-        router.push('/')
       }
+      if (type === "edit" && project?.id) {
+        await updateProject(form, project.id, token);
+      }
+
+      router.push("/");
     } catch (err) {
-      console.log(err)
+      console.log(err);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
   };
 

@@ -6,6 +6,11 @@ import {
   createUserMutation,
   getUserQuery,
   createProjectMutation,
+  projectsQuery,
+  getProjectByIdQuery,
+  getProjectsOfUserQuery,
+  deleteProjectMutation,
+  updateProjectMutation,
 } from "@/graphql";
 
 // types
@@ -92,4 +97,47 @@ export const createNewProject = async (
 
     return makeGraphQLRequest(createProjectMutation, variables);
   }
+};
+
+export const fetchAllProjects = async (
+  category?: string,
+  endcursor?: string
+) => {
+  return makeGraphQLRequest(projectsQuery, { category, endcursor });
+};
+
+export const getProjectDetails = async (id: string) => {
+  return makeGraphQLRequest(getProjectByIdQuery, { id });
+};
+
+export const getUserProjects = (id: string, last?: number) => {
+  return makeGraphQLRequest(getProjectsOfUserQuery, { id });
+};
+
+export const deleteProject = (id: string, token: string) => {
+  client.setHeader("Authorization", `Bearer ${token}`);
+
+  return makeGraphQLRequest(deleteProjectMutation, { id });
+};
+
+export const updateProject = async (
+  form: ProjectForm,
+  projectId: string,
+  token: string
+) => {
+  const updatedForm = { ...form };
+
+  if (updatedForm.image.includes("data:")) {
+    updatedForm.image = (await uploadImage(updatedForm.image))?.url;
+  }
+  client.setHeader("Authorization", `Bearer ${token}`);
+
+  const variables = {
+    id: projectId,
+    input: {
+      ...updatedForm,
+    },
+  };
+
+  return makeGraphQLRequest(updateProjectMutation, variables);
 };
