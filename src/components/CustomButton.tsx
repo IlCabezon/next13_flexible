@@ -4,7 +4,7 @@ import Image from "next/image";
 
 type Props = {
   title: string;
-  type: "button" | "submit";
+  type?: "button" | "submit";
   leftIcon?: string;
   rightIcon?: string;
   isLoading?: boolean;
