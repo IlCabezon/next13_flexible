@@ -1,7 +1,20 @@
-// ib
-import { ProjectInterface } from "@/common.types";
+// components
+import Categories from "@/components/Categories";
 import ProjectCard from "@/components/ProjectCard";
+import LoadMore from "@/components/LoadMore";
+
+// types
 import { fetchAllProjects } from "@/lib/actions";
+
+// lib
+import { ProjectInterface } from "@/common.types";
+
+type Props = {
+  searchParams: {
+    category: string;
+    endcursor: string;
+  };
+};
 
 type ProjectsSearch = {
   projectSearch: {
@@ -17,23 +30,35 @@ type ProjectsSearch = {
   };
 };
 
-export default async function Home({}) {
-  const data = (await fetchAllProjects()) as ProjectsSearch;
+export const dynamic = "force-dynamic";
+export const dynamicParams = true;
+export const revalidate = 0;
 
-  const projectsToDisplay = data?.projectSearch?.edges || [];
+export default async function Home({ searchParams }: Props) {
+  const data = (await fetchAllProjects(
+    searchParams?.category,
+    searchParams?.endcursor
+  )) as ProjectsSearch;
+
+  let projectsToDisplay = data?.projectSearch?.edges || [];
 
   if (!projectsToDisplay.length) {
     return (
       <section className="flexStart flex-col paddings">
-        Categories
+        <Categories />
         <p className="no-result-text text-center">No projects found.</p>
       </section>
     );
   }
+  /* if (projectsToDisplay.length < 8) {
+    projectsToDisplay = new Array(10).fill(null).map(el => el || projectsToDisplay[0]);
+  } */
+
+  const pagination = data?.projectSearch?.pageInfo;
 
   return (
     <section className="flex-start flex-col paddings mb-16">
-      <h1>Categories</h1>
+      <Categories />
 
       <section className="projects-grid">
         {projectsToDisplay.map(
@@ -51,7 +76,12 @@ export default async function Home({}) {
         )}
       </section>
 
-      <h1>LoadMore</h1>
+      <LoadMore
+        startCursor={pagination?.startCursor}
+        endCursor={pagination?.endCursor}
+        hasPreviousPage={pagination?.hasPreviousPage}
+        hasNextPage={pagination?.hasNextPage}
+      />
     </section>
   );
 }

@@ -27,7 +27,7 @@ export default function CustomButton({
     <button
       type={type}
       disabled={isLoading}
-      className={`flexCenter gap-3 px-4 py-3 rounded-xl text-sm font-medium max-md:w-full 
+      className={`flexCenter w-full gap-3 px-4 py-3 rounded-xl text-sm font-medium max-md:w-full 
       ${textColor || "text-white"}
       ${isLoading ? "bg-black/50" : bgColor || "bg-primary-purple"}
       `}
